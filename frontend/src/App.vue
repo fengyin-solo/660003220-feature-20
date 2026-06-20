@@ -6,6 +6,7 @@
     </header>
     <div class="flex flex-col lg:flex-row gap-4 p-4">
       <div class="lg:w-1/4 space-y-4">
+        <SmilesInput />
         <MoleculeSearch />
       </div>
       <div class="lg:w-1/2 space-y-4">
@@ -23,6 +24,7 @@ import { onMounted } from 'vue'
 import { useMoleculeStore } from './store/molecule'
 import MoleculeViewer from './components/MoleculeViewer.vue'
 import AdmetPanel from './components/AdmetPanel.vue'
+import SmilesInput from './components/SmilesInput.vue'
 import MoleculeSearch from './components/MoleculeSearch.vue'
 
 const store = useMoleculeStore()

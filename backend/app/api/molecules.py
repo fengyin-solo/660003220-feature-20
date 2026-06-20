@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.services.admet import parse_smiles, compute_admet
+from app.services.admet import parse_smiles, compute_admet, validate_smiles
 
 router = APIRouter()
 
@@ -47,5 +47,8 @@ def get_admet(mol_id: int):
 
 @router.post("/smiles")
 def parse_smiles_endpoint(smiles: str):
+    is_valid, errors, warnings = validate_smiles(smiles)
+    if not is_valid:
+        raise HTTPException(status_code=400, detail={"errors": errors, "warnings": warnings})
     atoms, bonds = parse_smiles(smiles)
     return {"atoms": atoms, "bonds": bonds}

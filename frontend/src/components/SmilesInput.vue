@@ -12,9 +12,11 @@
           :class="[
             'w-full bg-slate-900 border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none resize-none transition-all',
             inputSmiles.trim()
-              ? validation.valid
-                ? 'border-cyan-500 focus:border-cyan-400'
-                : 'border-red-500 focus:border-red-400'
+              ? errorMessage
+                ? 'border-red-500 focus:border-red-400'
+                : successMessage || validation.valid
+                  ? 'border-cyan-500 focus:border-cyan-400'
+                  : 'border-red-500 focus:border-red-400'
               : 'border-slate-600 focus:border-cyan-500'
           ]"
         />
@@ -36,6 +38,20 @@
           class="flex items-start gap-2 text-xs text-yellow-400 bg-yellow-900/20 rounded px-2 py-1.5">
           <span>⚠</span>
           <span>{{ warning }}</span>
+        </div>
+      </div>
+
+      <div v-if="successMessage" class="space-y-1">
+        <div class="flex items-start gap-2 text-xs text-green-400 bg-green-900/20 rounded px-2 py-1.5">
+          <span>✓</span>
+          <span>{{ successMessage }}</span>
+        </div>
+      </div>
+
+      <div v-if="errorMessage" class="space-y-1">
+        <div class="flex items-start gap-2 text-xs text-red-400 bg-red-900/20 rounded px-2 py-1.5">
+          <span>✗</span>
+          <span>{{ errorMessage }}</span>
         </div>
       </div>
 
@@ -89,6 +105,8 @@ import { useMoleculeStore, validateSMILES, type ValidationResult } from '../stor
 const store = useMoleculeStore()
 const inputSmiles = ref('')
 const lastValidation = ref<ValidationResult>({ valid: false, errors: [], warnings: [] })
+const successMessage = ref('')
+const errorMessage = ref('')
 
 const exampleList = [
   { name: '乙醇', smiles: 'CCO' },
@@ -113,7 +131,20 @@ function onInputChange() {}
 
 function onSubmit() {
   if (!canSubmit.value) return
-  store.parseCustomSMILES(inputSmiles.value)
+  const result = store.parseCustomSMILES(inputSmiles.value)
+  if (result) {
+    successMessage.value = '✓ 分子解析成功！'
+    errorMessage.value = ''
+    setTimeout(() => {
+      successMessage.value = ''
+    }, 2000)
+  } else {
+    errorMessage.value = '✗ 解析失败，请检查 SMILES 格式'
+    successMessage.value = ''
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 2000)
+  }
 }
 
 function onClear() {
